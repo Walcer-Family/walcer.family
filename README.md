@@ -2,6 +2,9 @@
 
 Static site for walcer.family, served by GitHub Pages from the `main` branch root.
 
+- `/` is the family landing page; each person or topic gets its own subdirectory.
+- `/lou/` holds everything about Lou Walcer (service details, obituary, remembrances).
+
 - `CNAME` sets the custom domain (apex `walcer.family`; `www` redirects to it).
 - `.nojekyll` turns off Jekyll so dot-folders like `.well-known/` get published.
 - `.well-known/matrix/client` and `server` let Matrix apps find the homeserver at
