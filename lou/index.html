@@ -53,11 +53,10 @@
   .bulletin-link { display: flex; align-items: center; gap: 1rem; margin: 0 0 1.25rem; padding: .85rem; background: var(--card);
                    border: 1px solid var(--rule); border-radius: 8px; }
   .bulletin-link .cover { flex: none; padding: 0; border: 0; background: none; cursor: zoom-in; line-height: 0; border-radius: 3px; }
-  .bulletin-link .cover img { width: 84px; height: auto; border-radius: 3px; box-shadow: 0 1px 4px rgba(0,0,0,.25); transition: transform .2s; }
+  .bulletin-link .cover img { width: 96px; height: auto; border-radius: 3px; box-shadow: 0 1px 4px rgba(0,0,0,.25); transition: transform .2s; }
   .bulletin-link .cover:hover img, .bulletin-link .cover:focus-visible img { transform: translateY(-2px) rotate(-1deg); }
   .bulletin-link p { margin: 0 0 .3rem; }
-  .bulletin-link .title { font-size: 1.1rem; }
-  .bulletin-link .open { font: inherit; color: var(--accent); background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; }
+  .bulletin-link .open { font: inherit; font-size: 1.1rem; text-align: left; color: var(--accent); background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; }
   .bulletin-link .small { color: var(--muted); font-size: .9rem; }
 
   .bv { position: fixed; inset: 0; z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center;
@@ -122,10 +121,9 @@
   <section id="funeral">
     <h2><a class="anchor" href="#funeral" aria-label="Link to this section">#</a>Funeral &amp; burial</h2>
     <div class="bulletin-link" id="bulletin-link">
-      <button class="cover" type="button" data-bulletin aria-label="Open the service bulletin"><img src="bulletin/page-1.jpg" width="1320" height="2040" alt="" ></button>
+      <button class="cover" type="button" data-bulletin aria-label="Open the service bulletin"><img src="bulletin/cover-thumb.jpg" width="480" height="797" alt=""></button>
       <div>
-        <p class="title">Service bulletin</p>
-        <p><button class="open" type="button" data-bulletin>Read the bulletin</button></p>
+        <p><button class="open" type="button" data-bulletin>Read the service bulletin</button></p>
         <p class="small">8 pages &middot; <a href="bulletin/lou-walcer-bulletin.pdf">Download PDF</a></p>
       </div>
     </div>
