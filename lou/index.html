@@ -48,6 +48,56 @@
   h2:hover .anchor, h3:hover .anchor, .anchor:focus { opacity: 1; }
   @media (hover: none) { .anchor { display: none; } }
   footer { color: var(--muted); font-size: .85rem; text-align: center; margin-top: 3rem; }
+
+  /* Service bulletin: link on the page, then a pop-out flip viewer */
+  .bulletin-link { display: flex; align-items: center; gap: 1rem; margin-top: 1.25rem; padding: .85rem; background: var(--card);
+                   border: 1px solid var(--rule); border-radius: 8px; }
+  .bulletin-link .cover { flex: none; padding: 0; border: 0; background: none; cursor: zoom-in; line-height: 0; border-radius: 3px; }
+  .bulletin-link .cover img { width: 84px; height: auto; border-radius: 3px; box-shadow: 0 1px 4px rgba(0,0,0,.25); transition: transform .2s; }
+  .bulletin-link .cover:hover img, .bulletin-link .cover:focus-visible img { transform: translateY(-2px) rotate(-1deg); }
+  .bulletin-link p { margin: 0 0 .3rem; }
+  .bulletin-link .title { font-size: 1.1rem; }
+  .bulletin-link .open { font: inherit; color: var(--accent); background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; }
+  .bulletin-link .small { color: var(--muted); font-size: .9rem; }
+
+  .bv { position: fixed; inset: 0; z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center;
+        background: rgba(18,17,16,.97); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); color: #ece8e2; font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        opacity: 0; transition: opacity .25s; touch-action: pan-y; }
+  .bv.show { display: flex; }
+  .bv.in { opacity: 1; }
+  .bv-stage { position: relative; flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; min-height: 0; }
+  .bv-book { position: relative; width: var(--bw); height: var(--ph); perspective: 2600px; transition: transform .6s cubic-bezier(.4,.1,.2,1); }
+  .bv-half { position: absolute; top: 0; width: var(--pw); height: var(--ph); background: #fbfaf7; overflow: hidden; }
+  .bv-half.l { left: 0; box-shadow: -6px 6px 24px rgba(0,0,0,.45); }
+  .bv-half.r { right: 0; box-shadow: 6px 6px 24px rgba(0,0,0,.45); }
+  .bv-half.blank { visibility: hidden; }
+  .bv.spread .bv-book:not(.solo) .bv-half.l::after, .bv.spread .bv-book:not(.solo) .bv-half.r::after { content: ""; position: absolute; top: 0; bottom: 0; width: 7%; pointer-events: none; }
+  .bv.spread .bv-half.l::after { right: 0; background: linear-gradient(to left, rgba(0,0,0,.16), transparent); }
+  .bv.spread .bv-half.r::after { left: 0; background: linear-gradient(to right, rgba(0,0,0,.16), transparent); }
+  .bv img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+  .bv-leaf { position: absolute; top: 0; right: 0; width: var(--pw); height: var(--ph); transform-origin: left center;
+             transform-style: preserve-3d; display: none; z-index: 2; }
+  .bv-leaf.go { transition: transform .7s cubic-bezier(.45,.05,.25,1); }
+  .bv-face { position: absolute; inset: 0; background: #fbfaf7; backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden;
+             box-shadow: 0 4px 20px rgba(0,0,0,.35); }
+  .bv-face.back { transform: rotateY(180deg); }
+  .bv-face.blank { visibility: hidden; }
+  .bv-face::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .35s ease-in-out;
+                    background: linear-gradient(to right, rgba(0,0,0,.22), rgba(0,0,0,0) 55%); }
+  .bv-face.back::after { background: linear-gradient(to left, rgba(0,0,0,.22), rgba(0,0,0,0) 55%); }
+  .bv-leaf.mid .bv-face::after { opacity: 1; }
+  .bv-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; border: 0;
+            background: rgba(255,255,255,.1); color: #fff; font-size: 26px; line-height: 1; cursor: pointer; z-index: 3; }
+  .bv-nav:hover, .bv-nav:focus-visible { background: rgba(255,255,255,.22); }
+  .bv-nav:disabled { opacity: .2; cursor: default; }
+  .bv-prev { left: 14px; } .bv-next { right: 14px; }
+  .bv-bar { flex: none; display: flex; align-items: center; justify-content: center; gap: 1.25rem; padding: 12px 16px 18px; font-size: .9rem; color: #bdb8b0; }
+  .bv-bar a { color: #ece8e2; }
+  .bv-close { position: absolute; top: 10px; right: 12px; z-index: 4; width: 44px; height: 44px; border: 0; border-radius: 50%;
+              background: rgba(255,255,255,.1); color: #fff; font-size: 26px; line-height: 1; cursor: pointer; }
+  .bv-close:hover, .bv-close:focus-visible { background: rgba(255,255,255,.22); }
+  @media (max-width: 40rem) { .bv-nav { display: none; } .bv-stage { padding-top: 56px; } }
+  @media (prefers-reduced-motion: reduce) { .bv-book, .bv-leaf.go, .bv { transition: none; } }
   @media (max-width: 30rem) {
     header h1 { font-size: 2.1rem; }
     dl { grid-template-columns: 1fr; gap: 0; }
@@ -77,6 +127,14 @@
       <dt id="livestream">Livestream</dt><dd>For those who can't attend in person, the service at Tikkun v&rsquo;Or will be streamed online. <span class="tbc">The link will be posted here before the service.</span></dd>
     </dl>
     <p>To be followed by burial at <a href="https://www.google.com/maps/search/?api=1&amp;query=Lake+View+Cemetery%2C+Ithaca%2C+NY">Lake View Cemetery</a>.</p>
+    <div class="bulletin-link" id="bulletin-link">
+      <button class="cover" type="button" data-bulletin aria-label="Open the service bulletin"><img src="bulletin/page-1.jpg" width="1320" height="2040" alt="" loading="lazy"></button>
+      <div>
+        <p class="title">Service bulletin</p>
+        <p><button class="open" type="button" data-bulletin>Read the bulletin</button></p>
+        <p class="small">8 pages &middot; <a href="bulletin/lou-walcer-bulletin.pdf">Download PDF</a></p>
+      </div>
+    </div>
   </section>
 
   <section id="reception">
@@ -119,5 +177,164 @@
 
   <footer><a href="/">The Walcer family</a></footer>
 </main>
+
+<div class="bv" id="bulletin" role="dialog" aria-modal="true" aria-label="Service bulletin" hidden>
+  <button class="bv-close" type="button" aria-label="Close">&times;</button>
+  <div class="bv-stage">
+    <button class="bv-nav bv-prev" type="button" aria-label="Previous page">&lsaquo;</button>
+    <div class="bv-book">
+      <div class="bv-half l"><img alt=""></div>
+      <div class="bv-half r"><img alt=""></div>
+      <div class="bv-leaf"><div class="bv-face front"><img alt=""></div><div class="bv-face back"><img alt=""></div></div>
+    </div>
+    <button class="bv-nav bv-next" type="button" aria-label="Next page">&rsaquo;</button>
+  </div>
+  <div class="bv-bar"><span class="bv-count" aria-live="polite"></span><a href="bulletin/lou-walcer-bulletin.pdf">Download PDF</a></div>
+</div>
+
+<script>
+(function () {
+  var N = 8, src = function (n) { return n ? 'bulletin/page-' + n + '.jpg' : ''; };
+  var el = document.getElementById('bulletin'), book = el.querySelector('.bv-book'), leaf = el.querySelector('.bv-leaf');
+  var L = el.querySelector('.bv-half.l'), R = el.querySelector('.bv-half.r');
+  var front = leaf.querySelector('.front'), back = leaf.querySelector('.back');
+  var prevB = el.querySelector('.bv-prev'), nextB = el.querySelector('.bv-next'), count = el.querySelector('.bv-count');
+  var spread = false, views = [], v = 0, busy = false, lastFocus = null, pushed = false;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function buildViews() {
+    views = [];
+    if (spread) { views.push([0, 1]); for (var i = 2; i < N; i += 2) views.push([i, i + 1]); views.push([N, 0]); }
+    else for (var j = 1; j <= N; j++) views.push([0, j]);
+  }
+  function setImg(box, n) {
+    var img = box.querySelector('img');
+    if (n) { img.src = src(n); img.alt = 'Bulletin page ' + n + ' of ' + N; } else { img.removeAttribute('src'); img.alt = ''; }
+    box.classList.toggle('blank', !n);
+  }
+  function shift(view) {
+    if (!spread) return 'none';
+    return !view[0] ? 'translateX(-25%)' : !view[1] ? 'translateX(25%)' : 'none';
+  }
+  function render() {
+    var cur = views[v];
+    setImg(L, cur[0]); setImg(R, cur[1]);
+    book.style.transform = shift(cur);
+    book.classList.toggle('solo', !cur[0] || !cur[1]);
+    prevB.disabled = v === 0; nextB.disabled = v === views.length - 1;
+    var pages = cur.filter(Boolean);
+    count.textContent = (pages.length > 1 ? 'Pages ' + pages.join('–') : 'Page ' + pages[0]) + ' of ' + N;
+  }
+  function layout() {
+    var stage = el.querySelector('.bv-stage'), W = stage.clientWidth - (window.innerWidth > 640 ? 140 : 24),
+        H = stage.clientHeight - parseFloat(getComputedStyle(stage).paddingTop) - 16;
+    var wasSpread = spread, firstPage = (views[v] || [0, 1]).filter(Boolean)[0] || 1;
+    spread = window.innerWidth >= 700 && window.innerWidth > window.innerHeight * 0.9;
+    var ratio = 1320 / 2040, pw = Math.min(H * ratio, spread ? W / 2 : W), ph = pw / ratio;
+    book.style.setProperty('--pw', pw + 'px'); book.style.setProperty('--ph', ph + 'px');
+    book.style.setProperty('--bw', (spread ? 2 * pw : pw) + 'px');
+    el.classList.toggle('spread', spread);
+    if (wasSpread !== spread || !views.length) {
+      buildViews();
+      v = views.findIndex(function (p) { return p.indexOf(firstPage) >= 0; });
+      if (v < 0) v = 0;
+    }
+    render();
+  }
+  function go(dir) {
+    var to = v + dir;
+    if (busy || to < 0 || to >= views.length) return;
+    var cur = views[v], nxt = views[to];
+    if (reduce) { v = to; render(); return; }
+    busy = true;
+    // The leaf always sits over the right-hand page and hinges on the spine (its left edge).
+    // Forward: the current right page turns over to become the next left page.
+    // Back: the previous right page swings back from the left.
+    if (dir > 0) { setImg(front, cur[1]); setImg(back, nxt[0]); setImg(L, cur[0]); setImg(R, nxt[1]); }
+    else { setImg(front, nxt[1]); setImg(back, cur[0]); setImg(L, nxt[0]); setImg(R, cur[1]); }
+    if (!spread) { back.classList.add('blank'); front.classList.remove('blank'); }
+    leaf.classList.remove('go');
+    leaf.style.transform = dir > 0 ? 'rotateY(0deg)' : 'rotateY(-180deg)';
+    leaf.style.display = 'block';
+    leaf.offsetWidth;
+    leaf.classList.add('go', 'mid');
+    leaf.style.transform = dir > 0 ? 'rotateY(-180deg)' : 'rotateY(0deg)';
+    book.style.transform = shift(nxt);
+    book.classList.remove('solo');
+    setTimeout(function () { leaf.classList.remove('mid'); }, 380);
+    var done = false;
+    function end(e) {
+      // Child transitions (the shading fade) bubble up too; only the leaf's own turn counts.
+      if (e && (e.target !== leaf || e.propertyName !== 'transform')) return;
+      if (done) return; done = true;
+      leaf.removeEventListener('transitionend', end);
+      leaf.style.display = 'none'; leaf.classList.remove('go');
+      v = to; render(); busy = false;
+    }
+    leaf.addEventListener('transitionend', end);
+    setTimeout(end, 900);
+  }
+
+  function open(push) {
+    if (el.classList.contains('show')) return;
+    lastFocus = document.activeElement;
+    el.hidden = false; el.classList.add('show');
+    document.documentElement.style.overflow = 'hidden';
+    layout();
+    requestAnimationFrame(function () { el.classList.add('in'); });
+    el.querySelector('.bv-close').focus();
+    for (var i = 1; i <= N; i++) new Image().src = src(i);
+    if (push) { history.pushState({bulletin: true}, '', '#bulletin'); pushed = true; }
+  }
+  function close(fromHistory) {
+    if (!el.classList.contains('show')) return;
+    el.classList.remove('in');
+    setTimeout(function () { el.classList.remove('show'); el.hidden = true; }, 250);
+    document.documentElement.style.overflow = '';
+    if (!fromHistory) {
+      if (pushed) history.back();
+      else history.replaceState(null, '', location.pathname + location.search);
+    }
+    pushed = false;
+    if (lastFocus) lastFocus.focus();
+  }
+
+  document.querySelectorAll('[data-bulletin]').forEach(function (b) { b.addEventListener('click', function () { open(true); }); });
+  el.querySelector('.bv-close').addEventListener('click', function () { close(false); });
+  prevB.addEventListener('click', function () { go(-1); });
+  nextB.addEventListener('click', function () { go(1); });
+  el.querySelector('.bv-stage').addEventListener('click', function (e) {
+    if (e.target.closest('.bv-nav')) return;
+    if (!e.target.closest('.bv-book')) { close(false); return; }
+    var r = book.getBoundingClientRect();
+    go(e.clientX > r.left + r.width / 2 ? 1 : -1);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (!el.classList.contains('show')) return;
+    if (e.key === 'Escape') close(false);
+    else if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
+    else if (e.key === 'Home') { v = 0; render(); }
+    else if (e.key === 'End') { v = views.length - 1; render(); }
+    else if (e.key === 'Tab') {
+      var f = Array.prototype.filter.call(el.querySelectorAll('button, a'), function (x) { return !x.disabled && x.offsetParent; });
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+    }
+  });
+  var sx = null, sy = null;
+  el.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, {passive: true});
+  el.addEventListener('touchend', function (e) {
+    if (sx === null) return;
+    var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; sx = null;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { e.preventDefault(); go(dx < 0 ? 1 : -1); }
+  });
+  window.addEventListener('resize', function () { if (el.classList.contains('show') && !busy) layout(); });
+  window.addEventListener('popstate', function () {
+    if (location.hash === '#bulletin') open(false); else close(true);
+  });
+  if (location.hash === '#bulletin') open(false);
+})();
+</script>
 </body>
 </html>
