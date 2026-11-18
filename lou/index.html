@@ -39,6 +39,9 @@
   a { color: var(--accent); }
   .hotels ul { list-style: none; padding: 0; margin: 0; }
   .hotels li { margin: 0 0 .45rem; }
+  .chip { display: inline-block; font-size: .78rem; line-height: 1.4; padding: .05rem .55rem; margin-left: .35rem;
+          border: 1px solid var(--accent); color: var(--accent); border-radius: 999px; vertical-align: .1em;
+          font-family: system-ui, -apple-system, "Segoe UI", sans-serif; white-space: nowrap; }
   .hotels .note { font-style: italic; }
   .hotels .addr { color: var(--muted); font-size: .95rem; }
   h2, h3 { position: relative; scroll-margin-top: 1rem; }
@@ -110,8 +113,8 @@
     <h2><a class="anchor" href="#hotels" aria-label="Link to this section">#</a>Visiting Ithaca</h2>
     <p>For family and friends travelling in, here are some places to stay.</p>
     <ul>
-      <li>Ithaca Marriott Downtown on the Commons<br><span class="note">Adrienne and Andrew are staying here.</span><br><span class="addr">120 S. Aurora St, Ithaca &middot; <a href="tel:+16072722222">(607) 272-2222</a></span></li>
-      <li>The Statler Hotel at Cornell<br><span class="note">Closest to Roberta&rsquo;s house.</span><br><span class="addr">130 Statler Dr, Ithaca &middot; <a href="tel:+16072542500">(607) 254-2500</a></span></li>
+      <li>Ithaca Marriott Downtown on the Commons <span class="chip">Adrienne &amp; Andrew staying here</span><br><span class="addr">120 S. Aurora St, Ithaca &middot; <a href="tel:+16072722222">(607) 272-2222</a></span></li>
+      <li>The Statler Hotel at Cornell <span class="chip">Closest to Roberta</span><br><span class="addr">130 Statler Dr, Ithaca &middot; <a href="tel:+16072542500">(607) 254-2500</a></span></li>
       <li>The Hotel Ithaca<br><span class="addr">222 S. Cayuga St, Ithaca &middot; <a href="tel:+16072721000">(607) 272-1000</a></span></li>
       <li>Hampton Inn Ithaca<br><span class="note">South end of town, easy parking.</span><br><span class="addr">337 Elmira Rd, Ithaca &middot; <a href="tel:+16072775500">(607) 277-5500</a></span></li>
     </ul>
