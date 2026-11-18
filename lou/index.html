@@ -41,6 +41,10 @@
   .hotels ul { list-style: none; padding: 0; margin: 0; }
   .hotels li { margin: 0 0 .45rem; }
   .hotels .addr { color: var(--muted); font-size: .95rem; }
+  h2, h3 { position: relative; scroll-margin-top: 1rem; }
+  .anchor { position: absolute; left: -1.1em; width: 1em; text-decoration: none; color: var(--muted); opacity: 0; transition: opacity .15s; }
+  h2:hover .anchor, h3:hover .anchor, .anchor:focus { opacity: 1; }
+  @media (hover: none) { .anchor { display: none; } }
   footer { color: var(--muted); font-size: .85rem; text-align: center; margin-top: 3rem; }
   @media (max-width: 30rem) {
     header h1 { font-size: 2.1rem; }
@@ -62,12 +66,12 @@
   </div>
 
   <section id="arrangements">
-    <h2>Arrangements</h2>
+    <h2><a class="anchor" href="#arrangements" aria-label="Link to this section">#</a>Arrangements</h2>
     <p>Arrangements are being handled by Bangs Funeral Home.</p>
   </section>
 
   <section id="viewing">
-    <h2>Viewing</h2>
+    <h2><a class="anchor" href="#viewing" aria-label="Link to this section">#</a>Viewing</h2>
     <dl>
       <dt>When</dt><dd class="tbc">To be confirmed</dd>
       <dt>Where</dt><dd class="tbc">To be confirmed</dd>
@@ -75,7 +79,7 @@
   </section>
 
   <section id="funeral">
-    <h2>Funeral &amp; burial</h2>
+    <h2><a class="anchor" href="#funeral" aria-label="Link to this section">#</a>Funeral &amp; burial</h2>
     <dl>
       <dt>When</dt><dd class="tbc">To be confirmed</dd>
       <dt>Burial</dt><dd>Lakeview Cemetery <span class="tbc">(details to be confirmed)</span></dd>
@@ -83,13 +87,13 @@
   </section>
 
   <section id="livestream">
-    <h2>Livestream</h2>
+    <h2><a class="anchor" href="#livestream" aria-label="Link to this section">#</a>Livestream</h2>
     <p>For those who can't attend in person, we plan to stream the funeral service online.</p>
     <p class="tbc">The link will be posted here before the service.</p>
   </section>
 
   <section id="shiva">
-    <h2>Shiva</h2>
+    <h2><a class="anchor" href="#shiva" aria-label="Link to this section">#</a>Shiva</h2>
     <dl>
       <dt>When</dt><dd class="tbc">To be confirmed</dd>
       <dt>Where</dt><dd class="tbc">To be confirmed</dd>
@@ -97,15 +101,15 @@
   </section>
 
   <section id="donations">
-    <h2>In &ldquo;Lou&rdquo; of Flowers&hellip;</h2>
+    <h2><a class="anchor" href="#donations" aria-label="Link to this section">#</a>In &ldquo;Lou&rdquo; of Flowers&hellip;</h2>
     <p>The family will share a list of charities for donations in Lou's name.</p>
     <p class="tbc">Coming soon.</p>
   </section>
 
-  <section id="visiting" class="hotels">
-    <h2>Visiting Ithaca</h2>
+  <section id="hotels" class="hotels">
+    <h2><a class="anchor" href="#hotels" aria-label="Link to this section">#</a>Visiting Ithaca</h2>
     <p>For family and friends travelling in, here are some places to stay. Ithaca hotels fill up quickly, so we suggest booking early.</p>
-    <h3>Downtown Ithaca <span class="addr">(walkable, near restaurants)</span></h3>
+    <h3 id="downtown"><a class="anchor" href="#downtown" aria-label="Link to this section">#</a>Downtown Ithaca <span class="addr">(walkable, near restaurants)</span></h3>
     <ul>
       <li>The Hotel Ithaca<br><span class="addr">222 S. Cayuga St, Ithaca &middot; <a href="tel:+16072721000">(607) 272-1000</a></span></li>
       <li>Ithaca Marriott Downtown on the Commons<br><span class="addr">120 S. Aurora St, Ithaca &middot; <a href="tel:+16072722222">(607) 272-2222</a></span></li>
@@ -113,13 +117,13 @@
       <li>Hilton Garden Inn Ithaca<br><span class="addr">130 E. Seneca St, Ithaca &middot; <a href="tel:+16072778900">(607) 277-8900</a></span></li>
       <li>The William Henry Miller Inn (bed &amp; breakfast)<br><span class="addr">303 N. Aurora St, Ithaca &middot; <a href="tel:+16072564553">(607) 256-4553</a></span></li>
     </ul>
-    <h3>Cornell and northeast Ithaca <span class="addr">(closest to Dryden)</span></h3>
+    <h3 id="cornell"><a class="anchor" href="#cornell" aria-label="Link to this section">#</a>Cornell and northeast Ithaca <span class="addr">(closest to Dryden)</span></h3>
     <ul>
       <li>The Statler Hotel at Cornell<br><span class="addr">130 Statler Dr, Ithaca &middot; <a href="tel:+16072542500">(607) 254-2500</a></span></li>
       <li>Courtyard by Marriott Ithaca Airport<br><span class="addr">29 Thornwood Dr, Ithaca &middot; <a href="tel:+16073301000">(607) 330-1000</a></span></li>
       <li>Homewood Suites by Hilton Ithaca<br><span class="addr">36 Cinema Dr, Ithaca &middot; <a href="tel:+16072660000">(607) 266-0000</a></span></li>
     </ul>
-    <h3>South Ithaca, Route 13 <span class="addr">(easy parking, often less expensive)</span></h3>
+    <h3 id="south"><a class="anchor" href="#south" aria-label="Link to this section">#</a>South Ithaca, Route 13 <span class="addr">(easy parking, often less expensive)</span></h3>
     <ul>
       <li>Hampton Inn Ithaca<br><span class="addr">337 Elmira Rd, Ithaca &middot; <a href="tel:+16072775500">(607) 277-5500</a></span></li>
       <li>Fairfield Inn &amp; Suites Ithaca<br><span class="addr">359 Elmira Rd, Ithaca &middot; <a href="tel:+16072771000">(607) 277-1000</a></span></li>
@@ -128,7 +132,7 @@
   </section>
 
   <section id="obituary">
-    <h2>Obituary</h2>
+    <h2><a class="anchor" href="#obituary" aria-label="Link to this section">#</a>Obituary</h2>
     <p class="tbc">Lou's obituary will be linked here once it is published.</p>
   </section>
 
