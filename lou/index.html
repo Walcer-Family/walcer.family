@@ -39,6 +39,8 @@
   a { color: var(--accent); }
   .hotels ul { list-style: none; padding: 0; margin: 0; }
   .hotels li { margin: 0 0 .45rem; }
+  .hotels .meta { color: var(--muted); font-size: .9rem; white-space: nowrap; margin-left: .25rem; }
+  .hotels .stars { color: #b8892e; letter-spacing: .05em; }
   .chip { display: inline-block; font-size: .78rem; line-height: 1.4; padding: .05rem .55rem; margin-left: .35rem;
           border: 1px solid var(--accent); color: var(--accent); border-radius: 999px; vertical-align: .1em;
           font-family: system-ui, -apple-system, "Segoe UI", sans-serif; white-space: nowrap; }
@@ -111,12 +113,12 @@
 
   <section id="hotels" class="hotels">
     <h2><a class="anchor" href="#hotels" aria-label="Link to this section">#</a>Visiting Ithaca</h2>
-    <p>For family and friends travelling in, here are some places to stay. Tap a hotel&rsquo;s name to book directly.</p>
+    <p>For family and friends travelling in, here are some places to stay. Tap a hotel&rsquo;s name to book directly. Stars are the hotel&rsquo;s class; $ to $$$$ is a rough price level.</p>
     <ul>
-      <li><a href="https://www.marriott.com/en-us/hotels/ithmc-ithaca-marriott-downtown-on-the-commons/overview/" target="_blank" rel="noopener">Ithaca Marriott Downtown on the Commons</a> <span class="chip">Adrienne staying here</span><br><span class="addr">120 S. Aurora St, Ithaca &middot; <a href="tel:+16072722222">(607) 272-2222</a></span></li>
-      <li><a href="https://statlerhotel.cornell.edu/" target="_blank" rel="noopener">The Statler Hotel at Cornell</a> <span class="chip">Closest to Roberta</span><br><span class="addr">130 Statler Dr, Ithaca &middot; <a href="tel:+16072542500">(607) 254-2500</a></span></li>
-      <li><a href="https://www.thehotelithaca.com/" target="_blank" rel="noopener">The Hotel Ithaca</a><br><span class="addr">222 S. Cayuga St, Ithaca &middot; <a href="tel:+16072721000">(607) 272-1000</a></span></li>
-      <li><a href="https://www.hilton.com/en/hotels/ithnyhx-hampton-ithaca/" target="_blank" rel="noopener">Hampton Inn Ithaca</a><br><span class="note">South end of town, easy parking.</span><br><span class="addr">337 Elmira Rd, Ithaca &middot; <a href="tel:+16072775500">(607) 277-5500</a></span></li>
+      <li><a href="https://www.marriott.com/en-us/hotels/ithmc-ithaca-marriott-downtown-on-the-commons/overview/" target="_blank" rel="noopener">Ithaca Marriott Downtown on the Commons</a> <span class="meta" aria-label="3.5-star hotel, price level 3 of 4"><span class="stars">&#9733;&#9733;&#9733;&frac12;</span> &middot; $$$</span> <span class="chip">Adrienne staying here</span><br><span class="addr">120 S. Aurora St, Ithaca &middot; <a href="tel:+16072722222">(607) 272-2222</a></span></li>
+      <li><a href="https://statlerhotel.cornell.edu/" target="_blank" rel="noopener">The Statler Hotel at Cornell</a> <span class="meta" aria-label="4-star hotel, price level 3 of 4"><span class="stars">&#9733;&#9733;&#9733;&#9733;</span> &middot; $$$</span> <span class="chip">Closest to Roberta</span><br><span class="addr">130 Statler Dr, Ithaca &middot; <a href="tel:+16072542500">(607) 254-2500</a></span></li>
+      <li><a href="https://www.thehotelithaca.com/" target="_blank" rel="noopener">The Hotel Ithaca</a> <span class="meta" aria-label="3-star hotel, price level 2 of 4"><span class="stars">&#9733;&#9733;&#9733;</span> &middot; $$</span><br><span class="addr">222 S. Cayuga St, Ithaca &middot; <a href="tel:+16072721000">(607) 272-1000</a></span></li>
+      <li><a href="https://www.hilton.com/en/hotels/ithnyhx-hampton-ithaca/" target="_blank" rel="noopener">Hampton Inn Ithaca</a> <span class="meta" aria-label="2.5-star hotel, price level 2 of 4"><span class="stars">&#9733;&#9733;&frac12;</span> &middot; $$</span><br><span class="note">South end of town, easy parking.</span><br><span class="addr">337 Elmira Rd, Ithaca &middot; <a href="tel:+16072775500">(607) 277-5500</a></span></li>
     </ul>
     <p><a href="https://www.google.com/travel/search?q=hotels%20in%20Ithaca%2C%20NY" target="_blank" rel="noopener">See more hotels in Ithaca on Google Hotels</a></p>
   </section>
