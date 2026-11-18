@@ -50,7 +50,7 @@
   footer { color: var(--muted); font-size: .85rem; text-align: center; margin-top: 3rem; }
 
   /* Service bulletin: link on the page, then a pop-out flip viewer */
-  .bulletin-link { display: flex; align-items: center; gap: 1rem; margin-top: 1.25rem; padding: .85rem; background: var(--card);
+  .bulletin-link { display: flex; align-items: center; gap: 1rem; margin: 0 0 1.25rem; padding: .85rem; background: var(--card);
                    border: 1px solid var(--rule); border-radius: 8px; }
   .bulletin-link .cover { flex: none; padding: 0; border: 0; background: none; cursor: zoom-in; line-height: 0; border-radius: 3px; }
   .bulletin-link .cover img { width: 84px; height: auto; border-radius: 3px; box-shadow: 0 1px 4px rgba(0,0,0,.25); transition: transform .2s; }
@@ -121,20 +121,20 @@
 
   <section id="funeral">
     <h2><a class="anchor" href="#funeral" aria-label="Link to this section">#</a>Funeral &amp; burial</h2>
-    <dl>
-      <dt>When</dt><dd>Thursday, November 19, 2026, at 1:00 PM</dd>
-      <dt>Where</dt><dd><a href="https://www.tikkunvor.org/">Congregation Tikkun v&rsquo;Or</a><br><a href="https://www.google.com/maps/search/?api=1&amp;query=2550+North+Triphammer+Rd%2C+Ithaca%2C+NY+14852">2550 North Triphammer Rd, Ithaca, NY 14852</a></dd>
-      <dt id="livestream">Livestream</dt><dd>For those who can't attend in person, the service at Tikkun v&rsquo;Or will be streamed online. <span class="tbc">The link will be posted here before the service.</span></dd>
-    </dl>
-    <p>To be followed by burial at <a href="https://www.google.com/maps/search/?api=1&amp;query=Lake+View+Cemetery%2C+Ithaca%2C+NY">Lake View Cemetery</a>.</p>
     <div class="bulletin-link" id="bulletin-link">
-      <button class="cover" type="button" data-bulletin aria-label="Open the service bulletin"><img src="bulletin/page-1.jpg" width="1320" height="2040" alt="" loading="lazy"></button>
+      <button class="cover" type="button" data-bulletin aria-label="Open the service bulletin"><img src="bulletin/page-1.jpg" width="1320" height="2040" alt="" ></button>
       <div>
         <p class="title">Service bulletin</p>
         <p><button class="open" type="button" data-bulletin>Read the bulletin</button></p>
         <p class="small">8 pages &middot; <a href="bulletin/lou-walcer-bulletin.pdf">Download PDF</a></p>
       </div>
     </div>
+    <dl>
+      <dt>When</dt><dd>Thursday, November 19, 2026, at 1:00 PM</dd>
+      <dt>Where</dt><dd><a href="https://www.tikkunvor.org/">Congregation Tikkun v&rsquo;Or</a><br><a href="https://www.google.com/maps/search/?api=1&amp;query=2550+North+Triphammer+Rd%2C+Ithaca%2C+NY+14852">2550 North Triphammer Rd, Ithaca, NY 14852</a></dd>
+      <dt id="livestream">Livestream</dt><dd>For those who can't attend in person, the service at Tikkun v&rsquo;Or will be streamed online. <span class="tbc">The link will be posted here before the service.</span></dd>
+    </dl>
+    <p>To be followed by burial at <a href="https://www.google.com/maps/search/?api=1&amp;query=Lake+View+Cemetery%2C+Ithaca%2C+NY">Lake View Cemetery</a>.</p>
   </section>
 
   <section id="reception">
