@@ -81,6 +81,8 @@
              box-shadow: 0 4px 20px rgba(0,0,0,.35); }
   .bv-face.back { transform: rotateY(180deg); }
   .bv-face.blank { visibility: hidden; }
+  .bv-hot { position: absolute; left: 35%; top: 49%; width: 30%; height: 4.6%; border-radius: 4px; z-index: 1; }
+  .bv-hot:hover, .bv-hot:focus-visible { background: rgba(47,74,98,.1); outline: 1px solid rgba(47,74,98,.35); }
   .bv-face::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .35s ease-in-out;
                     background: linear-gradient(to right, rgba(0,0,0,.22), rgba(0,0,0,0) 55%); }
   .bv-face.back::after { background: linear-gradient(to left, rgba(0,0,0,.22), rgba(0,0,0,0) 55%); }
@@ -209,6 +211,14 @@
     var img = box.querySelector('img');
     if (n) { img.src = src(n); img.alt = 'Bulletin page ' + n + ' of ' + N; } else { img.removeAttribute('src'); img.alt = ''; }
     box.classList.toggle('blank', !n);
+    // The back page prints the site address; make it a real link here.
+    var hot = box.querySelector('.bv-hot');
+    if (n === N && !hot) {
+      hot = document.createElement('a');
+      hot.className = 'bv-hot'; hot.href = 'https://walcer.family/lou'; hot.setAttribute('aria-label', 'walcer.family/lou');
+      hot.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); close(false); window.scrollTo({top: 0, behavior: 'smooth'}); });
+      box.appendChild(hot);
+    } else if (n !== N && hot) hot.remove();
   }
   function shift(view) {
     if (!spread) return 'none';
