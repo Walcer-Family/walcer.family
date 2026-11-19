@@ -97,6 +97,10 @@
                     background: linear-gradient(to right, rgba(0,0,0,.22), rgba(0,0,0,0) 55%); }
   .bv-face.back::after { background: linear-gradient(to left, rgba(0,0,0,.22), rgba(0,0,0,0) 55%); }
   .bv-leaf.mid .bv-face::after { opacity: 1; }
+  /* Spine shading rides on the turning page too, so it doesn't pop in when the page lands. */
+  .bv.spread .bv-face::before { content: ""; position: absolute; top: 0; bottom: 0; width: 7%; pointer-events: none; }
+  .bv.spread .bv-face.front::before { left: 0; background: linear-gradient(to right, rgba(0,0,0,.16), transparent); }
+  .bv.spread .bv-face.back::before { right: 0; background: linear-gradient(to left, rgba(0,0,0,.16), transparent); }
   .bv-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; border: 0;
             background: rgba(255,255,255,.1); color: #fff; font-size: 26px; line-height: 1; cursor: pointer; z-index: 3; }
   .bv-nav:hover, .bv-nav:focus-visible { background: rgba(255,255,255,.22); }
