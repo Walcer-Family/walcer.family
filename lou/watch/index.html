@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Watch the livestream of Lou Walcer's funeral service alongside the service bulletin and live chat.">
+<link rel="canonical" href="https://walcer.family/lou/watch/">
+<meta property="og:title" content="Watch: Lou Walcer funeral service">
+<meta property="og:image" content="https://walcer.family/lou/livestream.jpg">
+<meta property="og:url" content="https://walcer.family/lou/watch/">
+<title>Watch: Lou Walcer funeral service</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; background: #121110; color: #ece8e2;
+               font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .app { height: 100%; height: 100dvh; display: grid; grid-template-rows: auto 1fr; }
+  .top { display: flex; align-items: center; gap: 1rem; padding: 10px 16px; border-bottom: 1px solid #2a2826; font-size: .9rem; color: #bdb8b0; }
+  .top strong { font-family: Georgia, "Times New Roman", serif; font-weight: normal; font-size: 1.15rem; color: #ece8e2; margin-right: auto; }
+  .top a { color: #ece8e2; }
+  .split { display: grid; min-height: 0; }
+  .video { display: flex; align-items: center; justify-content: center; min-height: 0; min-width: 0; }
+  .frame { position: relative; aspect-ratio: 16 / 9; background: #000; overflow: hidden; box-shadow: 0 6px 28px rgba(0,0,0,.5); }
+  .frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .paper { min-height: 0; min-width: 0; display: flex; flex-direction: column; }
+  .tabs { flex: none; display: flex; justify-content: center; gap: 4px; padding: 8px 12px 0; }
+  .tab { font: inherit; font-size: .85rem; color: #bdb8b0; background: none; border: 1px solid transparent; border-radius: 999px; padding: 3px 14px; cursor: pointer; text-decoration: none; }
+  .tab:hover { color: #ece8e2; background: rgba(255,255,255,.06); }
+  .tab[aria-selected="true"] { color: #ece8e2; border-color: #3a3734; background: rgba(255,255,255,.08); }
+  .pane { flex: 1; min-height: 0; position: relative; }
+  .pane[hidden] { display: none; }
+  .chat-pane { padding: 8px 12px 12px; }
+  .chat-pane iframe { width: 100%; height: 100%; border: 0; border-radius: 6px; background: #0f0f0f; color-scheme: dark; }
+  .chat-note { position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: .78rem; color: #8f8a83; pointer-events: none; }
+  .tab.phone-only { display: none; }
+  .phone .tab.desk-only { display: none; }
+  .phone .tab.phone-only { display: inline-block; }
+  /* Draggable divider between the stream and the bulletin */
+  .divider { position: relative; z-index: 5; touch-action: none; background: transparent; }
+  .divider::before { content: ""; position: absolute; background: #2a2826; transition: background .15s; }
+  .divider::after { content: ""; position: absolute; left: 50%; top: 50%; border-radius: 3px; background: #6b6661; transition: background .15s; }
+  .divider:hover::before, .divider.dragging::before, .divider:focus-visible::before { background: #5b6b5a; }
+  .divider:hover::after, .divider.dragging::after, .divider:focus-visible::after { background: #ece8e2; }
+  .divider:focus-visible { outline: none; }
+  .side .divider { cursor: col-resize; }
+  .side .divider::before { top: 0; bottom: 0; left: 50%; width: 1px; transform: translateX(-50%); }
+  .side .divider::after { width: 4px; height: 36px; transform: translate(-50%, -50%); }
+  .stack .divider { cursor: row-resize; }
+  .stack .divider::before { left: 0; right: 0; top: 50%; height: 1px; transform: translateY(-50%); }
+  .stack .divider::after { width: 36px; height: 4px; transform: translate(-50%, -50%); }
+  .phone .divider { display: none; }
+  body.resizing, body.resizing * { user-select: none; }
+  body.resizing iframe { pointer-events: none; }
+  .hint { color: #8f8a83; font-size: .8rem; }
+  .layout-btn { font: inherit; color: #ece8e2; background: rgba(255,255,255,.08); border: 1px solid #3a3734; border-radius: 999px; padding: 2px 10px; cursor: pointer; white-space: nowrap; }
+  .layout-btn:hover { background: rgba(255,255,255,.16); }
+  /* Side by side: stream left, bulletin right */
+  .side .split { grid-template-columns: minmax(0, 3fr) 12px minmax(0, 2fr); }
+  .side .video { padding: 16px; }
+  .side .frame { width: 100%; max-height: 100%; border-radius: 6px; }
+  /* Stacked: stream on top, bulletin (usually a two-page spread) below */
+  .stack .split { grid-template-rows: 50% 12px minmax(0, 1fr); }
+  .stack .video { padding: 12px 16px 6px; }
+  .stack .frame { height: 100%; max-width: 100%; border-radius: 6px; }
+  /* Phone: full-width stream, single-page bulletin below */
+  .phone .split { grid-template-rows: auto minmax(0, 1fr); }
+  .phone .frame { width: 100%; }
+  .phone .paper { border-top: 1px solid #2a2826; }
+  .phone .top .hint, .phone .layout-btn { display: none; }
+  .phone .top { gap: .75rem; padding: 8px 12px; font-size: .85rem; }
+  .phone .top strong { font-size: 1rem; }
+  .phone .top a { white-space: nowrap; }
+  .bv { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;
+        color: #ece8e2; touch-action: pan-y; }
+  .bv-stage { position: relative; flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; min-height: 0; }
+  .bv-book { position: relative; width: var(--bw); height: var(--ph); perspective: 2600px; transition: transform .6s cubic-bezier(.4,.1,.2,1); }
+  .bv-half { position: absolute; top: 0; width: var(--pw); height: var(--ph); background: #fbfaf7; overflow: hidden; }
+  .bv-half.l { left: 0; box-shadow: -6px 6px 24px rgba(0,0,0,.45); }
+  .bv-half.r { right: 0; box-shadow: 6px 6px 24px rgba(0,0,0,.45); }
+  .bv-half.blank { visibility: hidden; }
+  .bv.spread .bv-book:not(.solo) .bv-half.l::after, .bv.spread .bv-book:not(.solo) .bv-half.r::after { content: ""; position: absolute; top: 0; bottom: 0; width: 7%; pointer-events: none; }
+  .bv.spread .bv-half.l::after { right: 0; background: linear-gradient(to left, rgba(0,0,0,.16), transparent); }
+  .bv.spread .bv-half.r::after { left: 0; background: linear-gradient(to right, rgba(0,0,0,.16), transparent); }
+  .bv img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+  .bv-leaf { position: absolute; top: 0; right: 0; width: var(--pw); height: var(--ph); transform-origin: left center;
+             transform-style: preserve-3d; display: none; z-index: 2; }
+  .bv-leaf.go { transition: transform .7s cubic-bezier(.45,.05,.25,1); }
+  .bv-face { position: absolute; inset: 0; background: #fbfaf7; backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden;
+             box-shadow: 0 4px 20px rgba(0,0,0,.35); }
+  .bv-face.back { transform: rotateY(180deg); }
+  .bv-face.blank { visibility: hidden; }
+  .bv-hot { position: absolute; left: 35%; top: 49%; width: 30%; height: 4.6%; border-radius: 4px; z-index: 1; }
+  .bv-hot:hover, .bv-hot:focus-visible { background: rgba(47,74,98,.1); outline: 1px solid rgba(47,74,98,.35); }
+  .bv-face::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .35s ease-in-out;
+                    background: linear-gradient(to right, rgba(0,0,0,.22), rgba(0,0,0,0) 55%); }
+  .bv-face.back::after { background: linear-gradient(to left, rgba(0,0,0,.22), rgba(0,0,0,0) 55%); }
+  .bv-leaf.mid .bv-face::after { opacity: 1; }
+  /* Spine shading rides on the turning page too, so it doesn't pop in when the page lands. */
+  .bv.spread .bv-face::before { content: ""; position: absolute; top: 0; bottom: 0; width: 7%; pointer-events: none; }
+  .bv.spread .bv-face.front::before { left: 0; background: linear-gradient(to right, rgba(0,0,0,.16), transparent); }
+  .bv.spread .bv-face.back::before { right: 0; background: linear-gradient(to left, rgba(0,0,0,.16), transparent); }
+  .bv-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; border: 0;
+            background: rgba(255,255,255,.1); color: #fff; font-size: 26px; line-height: 1; cursor: pointer; z-index: 3; }
+  .bv-nav:hover, .bv-nav:focus-visible { background: rgba(255,255,255,.22); }
+  .bv-nav:disabled { opacity: .2; cursor: default; }
+  .bv-prev { left: 6px; } .bv-next { right: 6px; }
+  .bv-bar { flex: none; display: flex; align-items: center; justify-content: center; gap: 1.25rem; padding: 8px 12px 10px; font-size: .9rem; color: #bdb8b0; }
+  .bv-bar a { color: #ece8e2; }
+  
+  @media (prefers-reduced-motion: reduce) { .bv-book, .bv-leaf.go { transition: none; } }
+</style>
+</head>
+<body>
+<div class="app side">
+  <div class="top">
+    <strong>Lou Walcer</strong>
+    <span class="hint">Thursday, November 19 &middot; 1:00 PM Eastern</span>
+    <button class="layout-btn" type="button" title="Change layout">Layout: auto</button>
+    <a href="https://youtu.be/n1EsyudCUsQ" target="_blank" rel="noopener">Open in YouTube</a>
+    <a href="../">Back to page</a>
+  </div>
+  <div class="split">
+    <div class="video">
+      <div class="frame">
+        <iframe src="https://www.youtube-nocookie.com/embed/n1EsyudCUsQ?rel=0&amp;modestbranding=1&amp;playsinline=1"
+                title="Funeral service for Louis (Lou) Walcer" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen
+                referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      </div>
+    </div>
+    <div class="divider" role="separator" tabindex="0" aria-label="Resize stream and bulletin" title="Drag to resize"></div>
+    <div class="paper">
+      <div class="tabs" role="tablist" aria-label="Bulletin or chat">
+        <button class="tab" role="tab" id="tab-bulletin" aria-controls="pane-bulletin" aria-selected="true" type="button">Bulletin</button>
+        <button class="tab desk-only" role="tab" id="tab-chat" aria-controls="pane-chat" aria-selected="false" type="button">Live chat</button>
+        <a class="tab phone-only" href="https://www.youtube.com/watch?v=n1EsyudCUsQ" target="_blank" rel="noopener">Chat on YouTube &#8599;</a>
+      </div>
+      <div class="pane" id="pane-bulletin" role="tabpanel" aria-labelledby="tab-bulletin">
+      <div class="bv" id="bulletin" aria-label="Service bulletin">
+        <div class="bv-stage">
+          <button class="bv-nav bv-prev" type="button" aria-label="Previous page">&lsaquo;</button>
+          <div class="bv-book">
+            <div class="bv-half l"><img alt=""></div>
+            <div class="bv-half r"><img alt=""></div>
+            <div class="bv-leaf"><div class="bv-face front"><img alt=""></div><div class="bv-face back"><img alt=""></div></div>
+          </div>
+          <button class="bv-nav bv-next" type="button" aria-label="Next page">&rsaquo;</button>
+        </div>
+        <div class="bv-bar"><span class="bv-count" aria-live="polite"></span><a href="../bulletin/lou-walcer-bulletin.pdf">Download PDF</a></div>
+      </div>
+      </div>
+      <div class="pane chat-pane" id="pane-chat" role="tabpanel" aria-labelledby="tab-chat" hidden></div>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  var N = 8, src = function (n) { return n ? '../bulletin/page-' + n + '.jpg' : ''; };
+  var el = document.getElementById('bulletin'), book = el.querySelector('.bv-book'), leaf = el.querySelector('.bv-leaf');
+  var L = el.querySelector('.bv-half.l'), R = el.querySelector('.bv-half.r');
+  var front = leaf.querySelector('.front'), back = leaf.querySelector('.back');
+  var prevB = el.querySelector('.bv-prev'), nextB = el.querySelector('.bv-next'), count = el.querySelector('.bv-count');
+  var stage = el.querySelector('.bv-stage');
+  var spread = false, views = [], v = 0, busy = false;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var ratio = 1320 / 2040;
+
+  function buildViews() {
+    views = [];
+    if (spread) { views.push([0, 1]); for (var i = 2; i < N; i += 2) views.push([i, i + 1]); views.push([N, 0]); }
+    else for (var j = 1; j <= N; j++) views.push([0, j]);
+  }
+  function setImg(box, n) {
+    var img = box.querySelector('img');
+    if (n) { img.src = src(n); img.alt = 'Bulletin page ' + n + ' of ' + N; } else { img.removeAttribute('src'); img.alt = ''; }
+    box.classList.toggle('blank', !n);
+  }
+  function shift(view) {
+    if (!spread) return 'none';
+    return !view[0] ? 'translateX(-25%)' : !view[1] ? 'translateX(25%)' : 'none';
+  }
+  function render() {
+    var cur = views[v];
+    setImg(L, cur[0]); setImg(R, cur[1]);
+    book.style.transform = shift(cur);
+    book.classList.toggle('solo', !cur[0] || !cur[1]);
+    prevB.disabled = v === 0; nextB.disabled = v === views.length - 1;
+    var pages = cur.filter(Boolean);
+    count.textContent = (pages.length > 1 ? 'Pages ' + pages.join('\u2013') : 'Page ' + pages[0]) + ' of ' + N;
+  }
+  function layout() {
+    if (!stage.clientWidth) return; // bulletin tab hidden
+    var W = stage.clientWidth - 120, H = stage.clientHeight - 16;
+    var wasSpread = spread, firstPage = (views[v] || [0, 1]).filter(Boolean)[0] || 1;
+    // Use a two-page spread only when that gives pages at least as big as a single page would.
+    var single = Math.min(H * ratio, W), double = Math.min(H * ratio, W / 2);
+    spread = double >= single * 0.8;
+    var pw = spread ? double : single, ph = pw / ratio;
+    book.style.setProperty('--pw', pw + 'px'); book.style.setProperty('--ph', ph + 'px');
+    book.style.setProperty('--bw', (spread ? 2 * pw : pw) + 'px');
+    el.classList.toggle('spread', spread);
+    if (wasSpread !== spread || !views.length) {
+      buildViews();
+      v = views.findIndex(function (p) { return p.indexOf(firstPage) >= 0; });
+      if (v < 0) v = 0;
+    }
+    render();
+  }
+  function go(dir) {
+    var to = v + dir;
+    if (busy || to < 0 || to >= views.length) return;
+    var cur = views[v], nxt = views[to];
+    if (reduce) { v = to; render(); return; }
+    busy = true;
+    if (dir > 0) { setImg(front, cur[1]); setImg(back, nxt[0]); setImg(L, cur[0]); setImg(R, nxt[1]); }
+    else { setImg(front, nxt[1]); setImg(back, cur[0]); setImg(L, nxt[0]); setImg(R, cur[1]); }
+    if (!spread) { back.classList.add('blank'); front.classList.remove('blank'); }
+    leaf.classList.remove('go');
+    leaf.style.transform = dir > 0 ? 'rotateY(0deg)' : 'rotateY(-180deg)';
+    leaf.style.display = 'block';
+    leaf.offsetWidth;
+    leaf.classList.add('go', 'mid');
+    leaf.style.transform = dir > 0 ? 'rotateY(-180deg)' : 'rotateY(0deg)';
+    book.style.transform = shift(nxt);
+    book.classList.remove('solo');
+    setTimeout(function () { leaf.classList.remove('mid'); }, 380);
+    var done = false;
+    function end(e) {
+      if (e && (e.target !== leaf || e.propertyName !== 'transform')) return;
+      if (done) return; done = true;
+      leaf.removeEventListener('transitionend', end);
+      leaf.style.display = 'none'; leaf.classList.remove('go');
+      v = to; render(); busy = false;
+    }
+    leaf.addEventListener('transitionend', end);
+    setTimeout(end, 900);
+  }
+
+  prevB.addEventListener('click', function () { go(-1); });
+  nextB.addEventListener('click', function () { go(1); });
+  stage.addEventListener('click', function (e) {
+    if (e.target.closest('.bv-nav') || !e.target.closest('.bv-book')) return;
+    var r = book.getBoundingClientRect();
+    go(e.clientX > r.left + r.width / 2 ? 1 : -1);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (document.getElementById('pane-bulletin').hidden) return;
+    if (e.target.closest && e.target.closest('iframe')) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); go(1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
+  });
+  var sx = null, sy = null;
+  el.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, {passive: true});
+  el.addEventListener('touchend', function (e) {
+    if (sx === null) return;
+    var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; sx = null;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { e.preventDefault(); go(dx < 0 ? 1 : -1); }
+  });
+  // Page layout: 'side' (stream | bulletin), 'stack' (stream over a bulletin spread) or 'phone'.
+  var app = document.querySelector('.app'), split = document.querySelector('.split'), btn = document.querySelector('.layout-btn');
+  var modes = ['auto', 'side', 'stack'], pref = 'auto';
+  try { pref = localStorage.getItem('watch-layout') || 'auto'; } catch (e) {}
+  if (modes.indexOf(pref) < 0) pref = 'auto';
+  function pickLayout() {
+    var W = split.clientWidth || window.innerWidth, H = split.clientHeight || window.innerHeight;
+    if (W < 700) return 'phone';
+    if (pref !== 'auto') return pref;
+    // Stacked works when the window is tall enough relative to its width to fit
+    // a decent stream plus a two-page spread underneath.
+    return W / H < 1.5 ? 'stack' : 'side';
+  }
+  // Divider position, remembered per layout as a fraction of the available space.
+  var frac = {side: null, stack: null};
+  try { var saved = JSON.parse(localStorage.getItem('watch-split') || '{}'); frac.side = saved.side || null; frac.stack = saved.stack || null; } catch (e) {}
+  var divider = document.querySelector('.divider'), mode = 'side';
+  function clamp(x, lo, hi) { return Math.max(lo, Math.min(hi, x)); }
+  function pageLayout() {
+    mode = pickLayout();
+    app.classList.remove('side', 'stack', 'phone'); app.classList.add(mode);
+    split.style.gridTemplateColumns = ''; split.style.gridTemplateRows = '';
+    var W = split.clientWidth, H = split.clientHeight;
+    if (mode === 'side') {
+      var left = clamp((frac.side || 0.6) * W, 260, W - 240);
+      split.style.gridTemplateColumns = Math.round(left) + 'px 12px minmax(0, 1fr)';
+      divider.setAttribute('aria-orientation', 'vertical');
+    } else if (mode === 'stack') {
+      // Default: the stream gets full width if it fits in half the height.
+      var top = frac.stack ? frac.stack * H : Math.min((W - 32) * 9 / 16, H * 0.5) + 18;
+      top = clamp(top, 120, H - 180);
+      split.style.gridTemplateRows = Math.round(top) + 'px 12px minmax(0, 1fr)';
+      divider.setAttribute('aria-orientation', 'horizontal');
+    }
+    btn.textContent = 'Layout: ' + (pref === 'auto' ? 'auto' : pref === 'side' ? 'side by side' : 'stacked');
+    if (!busy) layout();
+  }
+  function saveSplit() { try { localStorage.setItem('watch-split', JSON.stringify(frac)); } catch (e) {} }
+  var raf = 0;
+  function moveTo(clientX, clientY) {
+    var r = split.getBoundingClientRect();
+    if (mode === 'side') frac.side = clamp((clientX - r.left - 6) / r.width, 0.15, 0.9);
+    else if (mode === 'stack') frac.stack = clamp((clientY - r.top - 6) / r.height, 0.1, 0.85);
+    if (!raf) raf = requestAnimationFrame(function () { raf = 0; pageLayout(); });
+  }
+  divider.addEventListener('pointerdown', function (e) {
+    e.preventDefault();
+    divider.setPointerCapture(e.pointerId);
+    divider.classList.add('dragging'); document.body.classList.add('resizing');
+  });
+  divider.addEventListener('pointermove', function (e) {
+    if (divider.classList.contains('dragging')) moveTo(e.clientX, e.clientY);
+  });
+  function endDrag() {
+    if (!divider.classList.contains('dragging')) return;
+    divider.classList.remove('dragging'); document.body.classList.remove('resizing');
+    saveSplit(); pageLayout();
+  }
+  divider.addEventListener('pointerup', endDrag);
+  divider.addEventListener('pointercancel', endDrag);
+  // Double-click resets to the default split.
+  divider.addEventListener('dblclick', function () { frac[mode] = null; saveSplit(); pageLayout(); });
+  // Arrow keys nudge the divider when it has focus.
+  divider.addEventListener('keydown', function (e) {
+    var d = {ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1}[e.key];
+    if (!d) return;
+    e.preventDefault(); e.stopPropagation();
+    var r = split.getBoundingClientRect();
+    if (mode === 'side') frac.side = clamp((frac.side || (split.querySelector('.video').offsetWidth / r.width)) + d * 0.03, 0.15, 0.9);
+    else if (mode === 'stack') frac.stack = clamp((frac.stack || (split.querySelector('.video').offsetHeight / r.height)) + d * 0.03, 0.1, 0.85);
+    saveSplit(); pageLayout();
+  });
+
+  btn.addEventListener('click', function () {
+    pref = modes[(modes.indexOf(pref) + 1) % modes.length];
+    try { localStorage.setItem('watch-layout', pref); } catch (e) {}
+    pageLayout();
+  });
+  var t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(function () { if (!busy) pageLayout(); }, 80); });
+  // Bulletin / Live chat tabs. The chat iframe loads the first time the tab is opened.
+  var tabB = document.getElementById('tab-bulletin'), tabC = document.getElementById('tab-chat');
+  var paneB = document.getElementById('pane-bulletin'), paneC = document.getElementById('pane-chat');
+  function showTab(which) {
+    var chat = which === 'chat';
+    tabB.setAttribute('aria-selected', String(!chat)); tabC.setAttribute('aria-selected', String(chat));
+    paneB.hidden = chat; paneC.hidden = !chat;
+    if (chat && !paneC.firstChild) {
+      var f = document.createElement('iframe');
+      f.title = 'YouTube live chat';
+      f.src = 'https://www.youtube.com/live_chat?v=n1EsyudCUsQ&dark_theme=1&embed_domain=' + encodeURIComponent(location.hostname || 'walcer.family');
+      paneC.appendChild(f);
+    }
+    if (!chat) layout();
+  }
+  tabB.addEventListener('click', function () { showTab('bulletin'); });
+  tabC.addEventListener('click', function () { showTab('chat'); });
+  window.addEventListener('resize', function () { if (app.classList.contains('phone') && !paneC.hidden) showTab('bulletin'); });
+  for (var i = 1; i <= N; i++) new Image().src = src(i);
+  pageLayout();
+})();
+</script>
+</body>
+</html>
