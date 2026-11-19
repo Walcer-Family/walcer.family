@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Watch: Lou Walcer funeral service</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; background: #121110; color: #ece8e2;
+               font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .app { height: 100%; height: 100dvh; display: grid; grid-template-rows: auto 1fr; }
+  .top { display: flex; align-items: center; gap: 1rem; padding: 10px 16px; border-bottom: 1px solid #2a2826; font-size: .9rem; color: #bdb8b0; }
+  .top strong { font-family: Georgia, "Times New Roman", serif; font-weight: normal; font-size: 1.15rem; color: #ece8e2; margin-right: auto; }
+  .top a { color: #ece8e2; }
+  .split { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); min-height: 0; }
+  .video { display: flex; align-items: center; justify-content: center; padding: 16px; min-height: 0; min-width: 0; }
+  .frame { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: 100%; background: #000; border-radius: 6px; overflow: hidden; box-shadow: 0 6px 28px rgba(0,0,0,.5); }
+  .frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .paper { min-height: 0; min-width: 0; border-left: 1px solid #2a2826; }
+  .hint { color: #8f8a83; font-size: .8rem; }
+  /* Portrait or narrow: video on top, bulletin below */
+  @media (orientation: portrait), (max-width: 760px) {
+    .split { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
+    .video { padding: 0; }
+    .frame { border-radius: 0; max-height: none; }
+    .paper { border-left: 0; border-top: 1px solid #2a2826; }
+    .top .hint { display: none; }
+    .top { gap: .75rem; padding: 8px 12px; font-size: .85rem; }
+    .top strong { font-size: 1rem; }
+    .top a { white-space: nowrap; }
+  }
+  .bv { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;
+        color: #ece8e2; touch-action: pan-y; }
+  .bv-stage { position: relative; flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; min-height: 0; }
+  .bv-book { position: relative; width: var(--bw); height: var(--ph); perspective: 2600px; transition: transform .6s cubic-bezier(.4,.1,.2,1); }
+  .bv-half { position: absolute; top: 0; width: var(--pw); height: var(--ph); background: #fbfaf7; overflow: hidden; }
+  .bv-half.l { left: 0; box-shadow: -6px 6px 24px rgba(0,0,0,.45); }
+  .bv-half.r { right: 0; box-shadow: 6px 6px 24px rgba(0,0,0,.45); }
+  .bv-half.blank { visibility: hidden; }
+  .bv.spread .bv-book:not(.solo) .bv-half.l::after, .bv.spread .bv-book:not(.solo) .bv-half.r::after { content: ""; position: absolute; top: 0; bottom: 0; width: 7%; pointer-events: none; }
+  .bv.spread .bv-half.l::after { right: 0; background: linear-gradient(to left, rgba(0,0,0,.16), transparent); }
+  .bv.spread .bv-half.r::after { left: 0; background: linear-gradient(to right, rgba(0,0,0,.16), transparent); }
+  .bv img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+  .bv-leaf { position: absolute; top: 0; right: 0; width: var(--pw); height: var(--ph); transform-origin: left center;
+             transform-style: preserve-3d; display: none; z-index: 2; }
+  .bv-leaf.go { transition: transform .7s cubic-bezier(.45,.05,.25,1); }
+  .bv-face { position: absolute; inset: 0; background: #fbfaf7; backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden;
+             box-shadow: 0 4px 20px rgba(0,0,0,.35); }
+  .bv-face.back { transform: rotateY(180deg); }
+  .bv-face.blank { visibility: hidden; }
+  .bv-hot { position: absolute; left: 35%; top: 49%; width: 30%; height: 4.6%; border-radius: 4px; z-index: 1; }
+  .bv-hot:hover, .bv-hot:focus-visible { background: rgba(47,74,98,.1); outline: 1px solid rgba(47,74,98,.35); }
+  .bv-face::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .35s ease-in-out;
+                    background: linear-gradient(to right, rgba(0,0,0,.22), rgba(0,0,0,0) 55%); }
+  .bv-face.back::after { background: linear-gradient(to left, rgba(0,0,0,.22), rgba(0,0,0,0) 55%); }
+  .bv-leaf.mid .bv-face::after { opacity: 1; }
+  /* Spine shading rides on the turning page too, so it doesn't pop in when the page lands. */
+  .bv.spread .bv-face::before { content: ""; position: absolute; top: 0; bottom: 0; width: 7%; pointer-events: none; }
+  .bv.spread .bv-face.front::before { left: 0; background: linear-gradient(to right, rgba(0,0,0,.16), transparent); }
+  .bv.spread .bv-face.back::before { right: 0; background: linear-gradient(to left, rgba(0,0,0,.16), transparent); }
+  .bv-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; border: 0;
+            background: rgba(255,255,255,.1); color: #fff; font-size: 26px; line-height: 1; cursor: pointer; z-index: 3; }
+  .bv-nav:hover, .bv-nav:focus-visible { background: rgba(255,255,255,.22); }
+  .bv-nav:disabled { opacity: .2; cursor: default; }
+  .bv-prev { left: 6px; } .bv-next { right: 6px; }
+  .bv-bar { flex: none; display: flex; align-items: center; justify-content: center; gap: 1.25rem; padding: 8px 12px 10px; font-size: .9rem; color: #bdb8b0; }
+  .bv-bar a { color: #ece8e2; }
+  
+  @media (prefers-reduced-motion: reduce) { .bv-book, .bv-leaf.go { transition: none; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <strong>Lou Walcer</strong>
+    <span class="hint">Thursday, November 19 &middot; 1:00 PM Eastern</span>
+    <a href="https://youtu.be/n1EsyudCUsQ" target="_blank" rel="noopener">Open in YouTube</a>
+    <a href="../">Back to page</a>
+  </div>
+  <div class="split">
+    <div class="video">
+      <div class="frame">
+        <iframe src="https://www.youtube-nocookie.com/embed/n1EsyudCUsQ?rel=0&amp;modestbranding=1&amp;playsinline=1"
+                title="Funeral service for Louis (Lou) Walcer" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen
+                referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      </div>
+    </div>
+    <div class="paper">
+      <div class="bv" id="bulletin" aria-label="Service bulletin">
+        <div class="bv-stage">
+          <button class="bv-nav bv-prev" type="button" aria-label="Previous page">&lsaquo;</button>
+          <div class="bv-book">
+            <div class="bv-half l"><img alt=""></div>
+            <div class="bv-half r"><img alt=""></div>
+            <div class="bv-leaf"><div class="bv-face front"><img alt=""></div><div class="bv-face back"><img alt=""></div></div>
+          </div>
+          <button class="bv-nav bv-next" type="button" aria-label="Next page">&rsaquo;</button>
+        </div>
+        <div class="bv-bar"><span class="bv-count" aria-live="polite"></span><a href="../bulletin/lou-walcer-bulletin.pdf">Download PDF</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  var N = 8, src = function (n) { return n ? '../bulletin/page-' + n + '.jpg' : ''; };
+  var el = document.getElementById('bulletin'), book = el.querySelector('.bv-book'), leaf = el.querySelector('.bv-leaf');
+  var L = el.querySelector('.bv-half.l'), R = el.querySelector('.bv-half.r');
+  var front = leaf.querySelector('.front'), back = leaf.querySelector('.back');
+  var prevB = el.querySelector('.bv-prev'), nextB = el.querySelector('.bv-next'), count = el.querySelector('.bv-count');
+  var stage = el.querySelector('.bv-stage');
+  var spread = false, views = [], v = 0, busy = false;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var ratio = 1320 / 2040;
+
+  function buildViews() {
+    views = [];
+    if (spread) { views.push([0, 1]); for (var i = 2; i < N; i += 2) views.push([i, i + 1]); views.push([N, 0]); }
+    else for (var j = 1; j <= N; j++) views.push([0, j]);
+  }
+  function setImg(box, n) {
+    var img = box.querySelector('img');
+    if (n) { img.src = src(n); img.alt = 'Bulletin page ' + n + ' of ' + N; } else { img.removeAttribute('src'); img.alt = ''; }
+    box.classList.toggle('blank', !n);
+  }
+  function shift(view) {
+    if (!spread) return 'none';
+    return !view[0] ? 'translateX(-25%)' : !view[1] ? 'translateX(25%)' : 'none';
+  }
+  function render() {
+    var cur = views[v];
+    setImg(L, cur[0]); setImg(R, cur[1]);
+    book.style.transform = shift(cur);
+    book.classList.toggle('solo', !cur[0] || !cur[1]);
+    prevB.disabled = v === 0; nextB.disabled = v === views.length - 1;
+    var pages = cur.filter(Boolean);
+    count.textContent = (pages.length > 1 ? 'Pages ' + pages.join('\u2013') : 'Page ' + pages[0]) + ' of ' + N;
+  }
+  function layout() {
+    var W = stage.clientWidth - 120, H = stage.clientHeight - 16;
+    var wasSpread = spread, firstPage = (views[v] || [0, 1]).filter(Boolean)[0] || 1;
+    // Use a two-page spread only when that gives pages at least as big as a single page would.
+    var single = Math.min(H * ratio, W), double = Math.min(H * ratio, W / 2);
+    spread = double >= single * 0.92;
+    var pw = spread ? double : single, ph = pw / ratio;
+    book.style.setProperty('--pw', pw + 'px'); book.style.setProperty('--ph', ph + 'px');
+    book.style.setProperty('--bw', (spread ? 2 * pw : pw) + 'px');
+    el.classList.toggle('spread', spread);
+    if (wasSpread !== spread || !views.length) {
+      buildViews();
+      v = views.findIndex(function (p) { return p.indexOf(firstPage) >= 0; });
+      if (v < 0) v = 0;
+    }
+    render();
+  }
+  function go(dir) {
+    var to = v + dir;
+    if (busy || to < 0 || to >= views.length) return;
+    var cur = views[v], nxt = views[to];
+    if (reduce) { v = to; render(); return; }
+    busy = true;
+    if (dir > 0) { setImg(front, cur[1]); setImg(back, nxt[0]); setImg(L, cur[0]); setImg(R, nxt[1]); }
+    else { setImg(front, nxt[1]); setImg(back, cur[0]); setImg(L, nxt[0]); setImg(R, cur[1]); }
+    if (!spread) { back.classList.add('blank'); front.classList.remove('blank'); }
+    leaf.classList.remove('go');
+    leaf.style.transform = dir > 0 ? 'rotateY(0deg)' : 'rotateY(-180deg)';
+    leaf.style.display = 'block';
+    leaf.offsetWidth;
+    leaf.classList.add('go', 'mid');
+    leaf.style.transform = dir > 0 ? 'rotateY(-180deg)' : 'rotateY(0deg)';
+    book.style.transform = shift(nxt);
+    book.classList.remove('solo');
+    setTimeout(function () { leaf.classList.remove('mid'); }, 380);
+    var done = false;
+    function end(e) {
+      if (e && (e.target !== leaf || e.propertyName !== 'transform')) return;
+      if (done) return; done = true;
+      leaf.removeEventListener('transitionend', end);
+      leaf.style.display = 'none'; leaf.classList.remove('go');
+      v = to; render(); busy = false;
+    }
+    leaf.addEventListener('transitionend', end);
+    setTimeout(end, 900);
+  }
+
+  prevB.addEventListener('click', function () { go(-1); });
+  nextB.addEventListener('click', function () { go(1); });
+  stage.addEventListener('click', function (e) {
+    if (e.target.closest('.bv-nav') || !e.target.closest('.bv-book')) return;
+    var r = book.getBoundingClientRect();
+    go(e.clientX > r.left + r.width / 2 ? 1 : -1);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.target.closest && e.target.closest('iframe')) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); go(1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
+  });
+  var sx = null, sy = null;
+  el.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, {passive: true});
+  el.addEventListener('touchend', function (e) {
+    if (sx === null) return;
+    var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; sx = null;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { e.preventDefault(); go(dx < 0 ? 1 : -1); }
+  });
+  var t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(function () { if (!busy) layout(); }, 80); });
+  for (var i = 1; i <= N; i++) new Image().src = src(i);
+  layout();
+})();
+</script>
+</body>
+</html>
