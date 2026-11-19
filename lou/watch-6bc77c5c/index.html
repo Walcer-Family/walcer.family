@@ -18,19 +18,33 @@
   .frame { position: relative; aspect-ratio: 16 / 9; background: #000; overflow: hidden; box-shadow: 0 6px 28px rgba(0,0,0,.5); }
   .frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
   .paper { min-height: 0; min-width: 0; }
+  /* Draggable divider between the stream and the bulletin */
+  .divider { position: relative; z-index: 5; touch-action: none; background: transparent; }
+  .divider::before { content: ""; position: absolute; background: #2a2826; transition: background .15s; }
+  .divider::after { content: ""; position: absolute; left: 50%; top: 50%; border-radius: 3px; background: #6b6661; transition: background .15s; }
+  .divider:hover::before, .divider.dragging::before, .divider:focus-visible::before { background: #5b6b5a; }
+  .divider:hover::after, .divider.dragging::after, .divider:focus-visible::after { background: #ece8e2; }
+  .divider:focus-visible { outline: none; }
+  .side .divider { cursor: col-resize; }
+  .side .divider::before { top: 0; bottom: 0; left: 50%; width: 1px; transform: translateX(-50%); }
+  .side .divider::after { width: 4px; height: 36px; transform: translate(-50%, -50%); }
+  .stack .divider { cursor: row-resize; }
+  .stack .divider::before { left: 0; right: 0; top: 50%; height: 1px; transform: translateY(-50%); }
+  .stack .divider::after { width: 36px; height: 4px; transform: translate(-50%, -50%); }
+  .phone .divider { display: none; }
+  body.resizing, body.resizing * { user-select: none; }
+  body.resizing iframe { pointer-events: none; }
   .hint { color: #8f8a83; font-size: .8rem; }
   .layout-btn { font: inherit; color: #ece8e2; background: rgba(255,255,255,.08); border: 1px solid #3a3734; border-radius: 999px; padding: 2px 10px; cursor: pointer; white-space: nowrap; }
   .layout-btn:hover { background: rgba(255,255,255,.16); }
   /* Side by side: stream left, bulletin right */
-  .side .split { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+  .side .split { grid-template-columns: minmax(0, 3fr) 12px minmax(0, 2fr); }
   .side .video { padding: 16px; }
   .side .frame { width: 100%; max-height: 100%; border-radius: 6px; }
-  .side .paper { border-left: 1px solid #2a2826; }
   /* Stacked: stream on top, bulletin (usually a two-page spread) below */
-  .stack .split { grid-template-rows: var(--vh, 50%) minmax(0, 1fr); }
+  .stack .split { grid-template-rows: 50% 12px minmax(0, 1fr); }
   .stack .video { padding: 12px 16px 6px; }
   .stack .frame { height: 100%; max-width: 100%; border-radius: 6px; }
-  .stack .paper { border-top: 1px solid #2a2826; }
   /* Phone: full-width stream, single-page bulletin below */
   .phone .split { grid-template-rows: auto minmax(0, 1fr); }
   .phone .frame { width: 100%; }
@@ -96,6 +110,7 @@
                 referrerpolicy="strict-origin-when-cross-origin"></iframe>
       </div>
     </div>
+    <div class="divider" role="separator" tabindex="0" aria-label="Resize stream and bulletin" title="Drag to resize"></div>
     <div class="paper">
       <div class="bv" id="bulletin" aria-label="Service bulletin">
         <div class="bv-stage">
@@ -226,18 +241,66 @@
     // a decent stream plus a two-page spread underneath.
     return W / H < 1.5 ? 'stack' : 'side';
   }
+  // Divider position, remembered per layout as a fraction of the available space.
+  var frac = {side: null, stack: null};
+  try { var saved = JSON.parse(localStorage.getItem('watch-split') || '{}'); frac.side = saved.side || null; frac.stack = saved.stack || null; } catch (e) {}
+  var divider = document.querySelector('.divider'), mode = 'side';
+  function clamp(x, lo, hi) { return Math.max(lo, Math.min(hi, x)); }
   function pageLayout() {
-    var mode = pickLayout();
+    mode = pickLayout();
     app.classList.remove('side', 'stack', 'phone'); app.classList.add(mode);
-    if (mode === 'stack') {
-      var W = split.clientWidth - 32, H = split.clientHeight;
-      // Give the stream full width if it fits in half the height; otherwise cap it.
-      var vh = Math.min(W * 9 / 16, H * 0.5) + 18;
-      split.style.setProperty('--vh', Math.round(vh) + 'px');
+    split.style.gridTemplateColumns = ''; split.style.gridTemplateRows = '';
+    var W = split.clientWidth, H = split.clientHeight;
+    if (mode === 'side') {
+      var left = clamp((frac.side || 0.6) * W, 260, W - 240);
+      split.style.gridTemplateColumns = Math.round(left) + 'px 12px minmax(0, 1fr)';
+      divider.setAttribute('aria-orientation', 'vertical');
+    } else if (mode === 'stack') {
+      // Default: the stream gets full width if it fits in half the height.
+      var top = frac.stack ? frac.stack * H : Math.min((W - 32) * 9 / 16, H * 0.5) + 18;
+      top = clamp(top, 120, H - 180);
+      split.style.gridTemplateRows = Math.round(top) + 'px 12px minmax(0, 1fr)';
+      divider.setAttribute('aria-orientation', 'horizontal');
     }
     btn.textContent = 'Layout: ' + (pref === 'auto' ? 'auto' : pref === 'side' ? 'side by side' : 'stacked');
-    layout();
+    if (!busy) layout();
   }
+  function saveSplit() { try { localStorage.setItem('watch-split', JSON.stringify(frac)); } catch (e) {} }
+  var raf = 0;
+  function moveTo(clientX, clientY) {
+    var r = split.getBoundingClientRect();
+    if (mode === 'side') frac.side = clamp((clientX - r.left - 6) / r.width, 0.15, 0.9);
+    else if (mode === 'stack') frac.stack = clamp((clientY - r.top - 6) / r.height, 0.1, 0.85);
+    if (!raf) raf = requestAnimationFrame(function () { raf = 0; pageLayout(); });
+  }
+  divider.addEventListener('pointerdown', function (e) {
+    e.preventDefault();
+    divider.setPointerCapture(e.pointerId);
+    divider.classList.add('dragging'); document.body.classList.add('resizing');
+  });
+  divider.addEventListener('pointermove', function (e) {
+    if (divider.classList.contains('dragging')) moveTo(e.clientX, e.clientY);
+  });
+  function endDrag() {
+    if (!divider.classList.contains('dragging')) return;
+    divider.classList.remove('dragging'); document.body.classList.remove('resizing');
+    saveSplit(); pageLayout();
+  }
+  divider.addEventListener('pointerup', endDrag);
+  divider.addEventListener('pointercancel', endDrag);
+  // Double-click resets to the default split.
+  divider.addEventListener('dblclick', function () { frac[mode] = null; saveSplit(); pageLayout(); });
+  // Arrow keys nudge the divider when it has focus.
+  divider.addEventListener('keydown', function (e) {
+    var d = {ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1}[e.key];
+    if (!d) return;
+    e.preventDefault(); e.stopPropagation();
+    var r = split.getBoundingClientRect();
+    if (mode === 'side') frac.side = clamp((frac.side || (split.querySelector('.video').offsetWidth / r.width)) + d * 0.03, 0.15, 0.9);
+    else if (mode === 'stack') frac.stack = clamp((frac.stack || (split.querySelector('.video').offsetHeight / r.height)) + d * 0.03, 0.1, 0.85);
+    saveSplit(); pageLayout();
+  });
+
   btn.addEventListener('click', function () {
     pref = modes[(modes.indexOf(pref) + 1) % modes.length];
     try { localStorage.setItem('watch-layout', pref); } catch (e) {}
