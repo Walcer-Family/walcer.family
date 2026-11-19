@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Watch the livestream of Lou Walcer's funeral service alongside the service bulletin and live chat.">
+<meta name="description" content="Watch the recording of Lou Walcer's funeral service alongside the service bulletin.">
 <link rel="canonical" href="https://walcer.family/lou/watch/">
 <meta property="og:title" content="Watch: Lou Walcer funeral service">
 <meta property="og:image" content="https://walcer.family/lou/livestream.jpg">
 <meta property="og:url" content="https://walcer.family/lou/watch/">
-<title>Watch: Lou Walcer funeral service</title>
+<title>Watch: Lou Walcer funeral service recording</title>
 <style>
   * { box-sizing: border-box; }
   html, body { height: 100%; margin: 0; background: #121110; color: #ece8e2;
@@ -128,11 +128,6 @@
     </div>
     <div class="divider" role="separator" tabindex="0" aria-label="Resize stream and bulletin" title="Drag to resize"></div>
     <div class="paper">
-      <div class="tabs" role="tablist" aria-label="Bulletin or chat">
-        <button class="tab" role="tab" id="tab-bulletin" aria-controls="pane-bulletin" aria-selected="true" type="button">Bulletin</button>
-        <button class="tab desk-only" role="tab" id="tab-chat" aria-controls="pane-chat" aria-selected="false" type="button">Live chat</button>
-        <a class="tab phone-only" href="https://www.youtube.com/watch?v=n1EsyudCUsQ" target="_blank" rel="noopener">Chat on YouTube &#8599;</a>
-      </div>
       <div class="pane" id="pane-bulletin" role="tabpanel" aria-labelledby="tab-bulletin">
       <div class="bv" id="bulletin" aria-label="Service bulletin">
         <div class="bv-stage">
@@ -147,7 +142,6 @@
         <div class="bv-bar"><span class="bv-count" aria-live="polite"></span><a href="../bulletin/lou-walcer-bulletin.pdf">Download PDF</a></div>
       </div>
       </div>
-      <div class="pane chat-pane" id="pane-chat" role="tabpanel" aria-labelledby="tab-chat" hidden></div>
     </div>
   </div>
 </div>
@@ -242,7 +236,6 @@
     go(e.clientX > r.left + r.width / 2 ? 1 : -1);
   });
   document.addEventListener('keydown', function (e) {
-    if (document.getElementById('pane-bulletin').hidden) return;
     if (e.target.closest && e.target.closest('iframe')) return;
     if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); go(1); }
     else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
@@ -348,9 +341,11 @@
     }
     if (!chat) layout();
   }
-  tabB.addEventListener('click', function () { showTab('bulletin'); });
-  tabC.addEventListener('click', function () { showTab('chat'); });
-  window.addEventListener('resize', function () { if (app.classList.contains('phone') && !paneC.hidden) showTab('bulletin'); });
+  if (tabB && tabC) {
+    tabB.addEventListener('click', function () { showTab('bulletin'); });
+    tabC.addEventListener('click', function () { showTab('chat'); });
+    window.addEventListener('resize', function () { if (app.classList.contains('phone') && !paneC.hidden) showTab('bulletin'); });
+  }
   for (var i = 1; i <= N; i++) new Image().src = src(i);
   pageLayout();
 })();
