@@ -118,6 +118,16 @@
     dl { grid-template-columns: 1fr; gap: 0; }
     dd { margin-bottom: .6rem; }
   }
+  .watch { text-align: center; }
+  .watch a.card { position: relative; display: block; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.18); }
+  .watch a.card img { display: block; width: 100%; height: auto; transition: transform .25s; }
+  .watch a.card:hover img, .watch a.card:focus-visible img { transform: scale(1.02); }
+  .watch .play { position: absolute; right: 14px; bottom: 14px; width: 62px; height: 44px; border-radius: 12px;
+                 background: rgba(204,0,0,.92); box-shadow: 0 2px 10px rgba(0,0,0,.35); transition: background .2s; }
+  .watch .play::after { content: ""; position: absolute; left: 25px; top: 12px; border-style: solid; border-width: 10px 0 10px 16px; border-color: transparent transparent transparent #fff; }
+  .watch a.card:hover .play { background: #f00; }
+  .watch .caption { margin: .75rem 0 0; }
+  .watch .caption .tbc { display: block; font-size: .95rem; }
 </style>
 </head>
 <body>
@@ -127,6 +137,15 @@
     <h1>Lou Walcer</h1>
     <p class="dates">July 21, 1952 &ndash; November 14, 2026</p>
   </header>
+
+  <section id="watch" class="watch">
+    <h2><a class="anchor" href="#watch" aria-label="Link to this section">#</a>Watch the service live</h2>
+    <a class="card" href="https://youtu.be/n1EsyudCUsQ" target="_blank" rel="noopener">
+      <img src="livestream.jpg" width="1280" height="720" alt="Watch the funeral service for Louis Walcer on YouTube, Thursday, November 19, 2026, at 1:00 PM">
+      <span class="play" aria-hidden="true"></span>
+    </a>
+    <p class="caption"><a href="https://youtu.be/n1EsyudCUsQ" target="_blank" rel="noopener">Watch on YouTube</a><span class="tbc">The stream opens at 12:45 PM Eastern. The burial will not be streamed.</span></p>
+  </section>
 
   <section id="arrangements">
     <h2><a class="anchor" href="#arrangements" aria-label="Link to this section">#</a>Arrangements</h2>
