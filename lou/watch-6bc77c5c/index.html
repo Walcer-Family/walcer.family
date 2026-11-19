@@ -13,23 +13,32 @@
   .top { display: flex; align-items: center; gap: 1rem; padding: 10px 16px; border-bottom: 1px solid #2a2826; font-size: .9rem; color: #bdb8b0; }
   .top strong { font-family: Georgia, "Times New Roman", serif; font-weight: normal; font-size: 1.15rem; color: #ece8e2; margin-right: auto; }
   .top a { color: #ece8e2; }
-  .split { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); min-height: 0; }
-  .video { display: flex; align-items: center; justify-content: center; padding: 16px; min-height: 0; min-width: 0; }
-  .frame { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: 100%; background: #000; border-radius: 6px; overflow: hidden; box-shadow: 0 6px 28px rgba(0,0,0,.5); }
+  .split { display: grid; min-height: 0; }
+  .video { display: flex; align-items: center; justify-content: center; min-height: 0; min-width: 0; }
+  .frame { position: relative; aspect-ratio: 16 / 9; background: #000; overflow: hidden; box-shadow: 0 6px 28px rgba(0,0,0,.5); }
   .frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-  .paper { min-height: 0; min-width: 0; border-left: 1px solid #2a2826; }
+  .paper { min-height: 0; min-width: 0; }
   .hint { color: #8f8a83; font-size: .8rem; }
-  /* Portrait or narrow: video on top, bulletin below */
-  @media (orientation: portrait), (max-width: 760px) {
-    .split { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
-    .video { padding: 0; }
-    .frame { border-radius: 0; max-height: none; }
-    .paper { border-left: 0; border-top: 1px solid #2a2826; }
-    .top .hint { display: none; }
-    .top { gap: .75rem; padding: 8px 12px; font-size: .85rem; }
-    .top strong { font-size: 1rem; }
-    .top a { white-space: nowrap; }
-  }
+  .layout-btn { font: inherit; color: #ece8e2; background: rgba(255,255,255,.08); border: 1px solid #3a3734; border-radius: 999px; padding: 2px 10px; cursor: pointer; white-space: nowrap; }
+  .layout-btn:hover { background: rgba(255,255,255,.16); }
+  /* Side by side: stream left, bulletin right */
+  .side .split { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+  .side .video { padding: 16px; }
+  .side .frame { width: 100%; max-height: 100%; border-radius: 6px; }
+  .side .paper { border-left: 1px solid #2a2826; }
+  /* Stacked: stream on top, bulletin (usually a two-page spread) below */
+  .stack .split { grid-template-rows: var(--vh, 50%) minmax(0, 1fr); }
+  .stack .video { padding: 12px 16px 6px; }
+  .stack .frame { height: 100%; max-width: 100%; border-radius: 6px; }
+  .stack .paper { border-top: 1px solid #2a2826; }
+  /* Phone: full-width stream, single-page bulletin below */
+  .phone .split { grid-template-rows: auto minmax(0, 1fr); }
+  .phone .frame { width: 100%; }
+  .phone .paper { border-top: 1px solid #2a2826; }
+  .phone .top .hint, .phone .layout-btn { display: none; }
+  .phone .top { gap: .75rem; padding: 8px 12px; font-size: .85rem; }
+  .phone .top strong { font-size: 1rem; }
+  .phone .top a { white-space: nowrap; }
   .bv { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;
         color: #ece8e2; touch-action: pan-y; }
   .bv-stage { position: relative; flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; min-height: 0; }
@@ -71,10 +80,11 @@
 </style>
 </head>
 <body>
-<div class="app">
+<div class="app side">
   <div class="top">
     <strong>Lou Walcer</strong>
     <span class="hint">Thursday, November 19 &middot; 1:00 PM Eastern</span>
+    <button class="layout-btn" type="button" title="Change layout">Layout: auto</button>
     <a href="https://youtu.be/n1EsyudCUsQ" target="_blank" rel="noopener">Open in YouTube</a>
     <a href="../">Back to page</a>
   </div>
@@ -142,7 +152,7 @@
     var wasSpread = spread, firstPage = (views[v] || [0, 1]).filter(Boolean)[0] || 1;
     // Use a two-page spread only when that gives pages at least as big as a single page would.
     var single = Math.min(H * ratio, W), double = Math.min(H * ratio, W / 2);
-    spread = double >= single * 0.92;
+    spread = double >= single * 0.8;
     var pw = spread ? double : single, ph = pw / ratio;
     book.style.setProperty('--pw', pw + 'px'); book.style.setProperty('--ph', ph + 'px');
     book.style.setProperty('--bw', (spread ? 2 * pw : pw) + 'px');
@@ -203,9 +213,39 @@
     var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; sx = null;
     if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { e.preventDefault(); go(dx < 0 ? 1 : -1); }
   });
-  var t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(function () { if (!busy) layout(); }, 80); });
+  // Page layout: 'side' (stream | bulletin), 'stack' (stream over a bulletin spread) or 'phone'.
+  var app = document.querySelector('.app'), split = document.querySelector('.split'), btn = document.querySelector('.layout-btn');
+  var modes = ['auto', 'side', 'stack'], pref = 'auto';
+  try { pref = localStorage.getItem('watch-layout') || 'auto'; } catch (e) {}
+  if (modes.indexOf(pref) < 0) pref = 'auto';
+  function pickLayout() {
+    var W = split.clientWidth || window.innerWidth, H = split.clientHeight || window.innerHeight;
+    if (W < 700) return 'phone';
+    if (pref !== 'auto') return pref;
+    // Stacked works when the window is tall enough relative to its width to fit
+    // a decent stream plus a two-page spread underneath.
+    return W / H < 1.5 ? 'stack' : 'side';
+  }
+  function pageLayout() {
+    var mode = pickLayout();
+    app.classList.remove('side', 'stack', 'phone'); app.classList.add(mode);
+    if (mode === 'stack') {
+      var W = split.clientWidth - 32, H = split.clientHeight;
+      // Give the stream full width if it fits in half the height; otherwise cap it.
+      var vh = Math.min(W * 9 / 16, H * 0.5) + 18;
+      split.style.setProperty('--vh', Math.round(vh) + 'px');
+    }
+    btn.textContent = 'Layout: ' + (pref === 'auto' ? 'auto' : pref === 'side' ? 'side by side' : 'stacked');
+    layout();
+  }
+  btn.addEventListener('click', function () {
+    pref = modes[(modes.indexOf(pref) + 1) % modes.length];
+    try { localStorage.setItem('watch-layout', pref); } catch (e) {}
+    pageLayout();
+  });
+  var t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(function () { if (!busy) pageLayout(); }, 80); });
   for (var i = 1; i <= N; i++) new Image().src = src(i);
-  layout();
+  pageLayout();
 })();
 </script>
 </body>
