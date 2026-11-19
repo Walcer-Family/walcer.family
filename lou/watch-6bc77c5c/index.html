@@ -17,7 +17,19 @@
   .video { display: flex; align-items: center; justify-content: center; min-height: 0; min-width: 0; }
   .frame { position: relative; aspect-ratio: 16 / 9; background: #000; overflow: hidden; box-shadow: 0 6px 28px rgba(0,0,0,.5); }
   .frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-  .paper { min-height: 0; min-width: 0; }
+  .paper { min-height: 0; min-width: 0; display: flex; flex-direction: column; }
+  .tabs { flex: none; display: flex; justify-content: center; gap: 4px; padding: 8px 12px 0; }
+  .tab { font: inherit; font-size: .85rem; color: #bdb8b0; background: none; border: 1px solid transparent; border-radius: 999px; padding: 3px 14px; cursor: pointer; text-decoration: none; }
+  .tab:hover { color: #ece8e2; background: rgba(255,255,255,.06); }
+  .tab[aria-selected="true"] { color: #ece8e2; border-color: #3a3734; background: rgba(255,255,255,.08); }
+  .pane { flex: 1; min-height: 0; position: relative; }
+  .pane[hidden] { display: none; }
+  .chat-pane { padding: 8px 12px 12px; }
+  .chat-pane iframe { width: 100%; height: 100%; border: 0; border-radius: 6px; background: #fff; }
+  .chat-note { position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: .78rem; color: #8f8a83; pointer-events: none; }
+  .tab.phone-only { display: none; }
+  .phone .tab.desk-only { display: none; }
+  .phone .tab.phone-only { display: inline-block; }
   /* Draggable divider between the stream and the bulletin */
   .divider { position: relative; z-index: 5; touch-action: none; background: transparent; }
   .divider::before { content: ""; position: absolute; background: #2a2826; transition: background .15s; }
@@ -112,6 +124,12 @@
     </div>
     <div class="divider" role="separator" tabindex="0" aria-label="Resize stream and bulletin" title="Drag to resize"></div>
     <div class="paper">
+      <div class="tabs" role="tablist" aria-label="Bulletin or chat">
+        <button class="tab" role="tab" id="tab-bulletin" aria-controls="pane-bulletin" aria-selected="true" type="button">Bulletin</button>
+        <button class="tab desk-only" role="tab" id="tab-chat" aria-controls="pane-chat" aria-selected="false" type="button">Live chat</button>
+        <a class="tab phone-only" href="https://www.youtube.com/watch?v=n1EsyudCUsQ" target="_blank" rel="noopener">Chat on YouTube &#8599;</a>
+      </div>
+      <div class="pane" id="pane-bulletin" role="tabpanel" aria-labelledby="tab-bulletin">
       <div class="bv" id="bulletin" aria-label="Service bulletin">
         <div class="bv-stage">
           <button class="bv-nav bv-prev" type="button" aria-label="Previous page">&lsaquo;</button>
@@ -124,6 +142,8 @@
         </div>
         <div class="bv-bar"><span class="bv-count" aria-live="polite"></span><a href="../bulletin/lou-walcer-bulletin.pdf">Download PDF</a></div>
       </div>
+      </div>
+      <div class="pane chat-pane" id="pane-chat" role="tabpanel" aria-labelledby="tab-chat" hidden></div>
     </div>
   </div>
 </div>
@@ -163,6 +183,7 @@
     count.textContent = (pages.length > 1 ? 'Pages ' + pages.join('\u2013') : 'Page ' + pages[0]) + ' of ' + N;
   }
   function layout() {
+    if (!stage.clientWidth) return; // bulletin tab hidden
     var W = stage.clientWidth - 120, H = stage.clientHeight - 16;
     var wasSpread = spread, firstPage = (views[v] || [0, 1]).filter(Boolean)[0] || 1;
     // Use a two-page spread only when that gives pages at least as big as a single page would.
@@ -217,6 +238,7 @@
     go(e.clientX > r.left + r.width / 2 ? 1 : -1);
   });
   document.addEventListener('keydown', function (e) {
+    if (document.getElementById('pane-bulletin').hidden) return;
     if (e.target.closest && e.target.closest('iframe')) return;
     if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); go(1); }
     else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
@@ -307,6 +329,24 @@
     pageLayout();
   });
   var t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(function () { if (!busy) pageLayout(); }, 80); });
+  // Bulletin / Live chat tabs. The chat iframe loads the first time the tab is opened.
+  var tabB = document.getElementById('tab-bulletin'), tabC = document.getElementById('tab-chat');
+  var paneB = document.getElementById('pane-bulletin'), paneC = document.getElementById('pane-chat');
+  function showTab(which) {
+    var chat = which === 'chat';
+    tabB.setAttribute('aria-selected', String(!chat)); tabC.setAttribute('aria-selected', String(chat));
+    paneB.hidden = chat; paneC.hidden = !chat;
+    if (chat && !paneC.firstChild) {
+      var f = document.createElement('iframe');
+      f.title = 'YouTube live chat';
+      f.src = 'https://www.youtube.com/live_chat?v=n1EsyudCUsQ&embed_domain=' + encodeURIComponent(location.hostname || 'walcer.family');
+      paneC.appendChild(f);
+    }
+    if (!chat) layout();
+  }
+  tabB.addEventListener('click', function () { showTab('bulletin'); });
+  tabC.addEventListener('click', function () { showTab('chat'); });
+  window.addEventListener('resize', function () { if (app.classList.contains('phone') && !paneC.hidden) showTab('bulletin'); });
   for (var i = 1; i <= N; i++) new Image().src = src(i);
   pageLayout();
 })();
